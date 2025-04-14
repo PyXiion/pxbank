@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import LoginForm from "@/widgets/login/LoginForm.vue";
 import {useUserStore} from "@/stores/userStore.ts";
-import {watch} from "vue";
+import {onMounted, watch} from "vue";
 import {useRouter} from "vue-router";
 import iconUrl from "@/assets/icon.png";
 
@@ -16,6 +16,12 @@ async function submit(login: string, password: string) {
 }
 
 watch(() => userStore.isLoggedIn, () => {
+  if (userStore.isLoggedIn) {
+    window.location.href = `/${userStore.state.user.username}`
+  }
+})
+
+onMounted(() => {
   if (userStore.isLoggedIn) {
     window.location.href = `/${userStore.state.user.username}`
   }
