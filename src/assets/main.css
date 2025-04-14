@@ -1,0 +1,51 @@
+@import './base.css';
+
+:root {
+    @apply bg-neutral-100 dark:bg-neutral-800;
+}
+
+#app, body {
+    min-width: 100%;
+    min-height: 100%;
+    --p-paginator-background: transparent;
+}
+
+@utility panel-no-p {
+    @apply shadow-lg rounded-xl outline outline-black/5 bg-white dark:bg-neutral-700
+        max-sm:rounded-none;
+}
+@utility panel {
+    @apply panel-no-p p-3;
+}
+
+.slide-transition-move, /* apply transition to moving elements */
+.slide-transition-enter-active,
+.slide-transition-leave-active {
+    transition: all 0.5s ease;
+}
+
+.slide-transition-enter-from,
+.slide-transition-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+.slide-transition-leave-active {
+    position: absolute;
+}
+
+.reappear-transition-move, /* apply transition to moving elements */
+.reappear-transition-enter-active,
+.reappear-transition-leave-active {
+    transition: all 0.5s ease;
+}
+
+.reappear-transition-enter-from,
+.reappear-transition-leave-to {
+    opacity: 0;
+}
+.reappear-transition-leave-active {
+    position: absolute;
+}
