@@ -1,1 +1,1 @@
-export const WEBSOCKET_ADDRESS = import.meta.env.WEBSOCKET_ADDRESS;
+export const WEBSOCKET_ADDRESS = import.meta.env.VITE_WEBSOCKET_ADDRESS;
