@@ -1,1 +1,1 @@
-export const WEBSOCKET_ADDRESS = 'ws://localhost:4000';
+export const WEBSOCKET_ADDRESS = import.meta.env.WEBSOCKET_ADDRESS;
