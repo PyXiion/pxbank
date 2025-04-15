@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import Button from "primevue/button";
 import {computed, ref, watch} from "vue";
 import Dialog from "primevue/dialog";
@@ -13,6 +13,7 @@ interface Props {
   type: 'number' | 'id'
   username: string
 }
+
 const props = defineProps<Props>()
 const toast = useToaster()
 
@@ -25,14 +26,14 @@ const text = computed(() => props.type === 'number' ? {
   details: 'Тут вы можете перевести средства меж своих счетов.'
 })
 
-const fromAccount = ref<Account|null>(null)
-const toAccount = ref<Account|null>(null)
+const fromAccount = ref<Account | null>(null)
+const toAccount = ref<Account | null>(null)
 const accountNumber = ref("")
 const amount = ref<number>(0)
 
-const enabledMoneyInput = computed(() => props.type === 'id' ? !!toAccount.value : (!!fromAccount.value &&!!accountNumber.value))
+const enabledMoneyInput = computed(() => props.type === 'id' ? !!toAccount.value : (!!fromAccount.value && !!accountNumber.value))
 
-watch(() => visible.value, (visible, oldVisible) => {
+watch(() => visible.value, (visible) => {
   if (visible === true)
     clear()
 })
@@ -63,16 +64,16 @@ function clear() {
 
 <template>
   <Dialog
-    modal
-    :header="text.text"
     v-model:visible="visible"
+    :header="text.text"
     class="w-[25rem]"
+    modal
   >
     <span class="block mb-3 text-surface-500 dark:text-surface-400">
-      {{text.details}}
+      {{ text.details }}
     </span>
 
-    <AccountSelect v-model="fromAccount" class="w-1/1 mb-4" :username_from="username"/>
+    <AccountSelect v-model="fromAccount" :username_from="username" class="w-1/1 mb-4"/>
 
     <div v-if="type === 'number'">
       <InputGroup class="mb-4">
@@ -82,26 +83,26 @@ function clear() {
     </div>
     <div v-else>
       <AccountSelect
-          v-model="toAccount"
-          class="w-1/1 mb-4"
-          :username_from="username"
-          :required_currency="fromAccount?.currency_id"
-          :disabled="!fromAccount"
-          :exclude_id="fromAccount?.id"
-          placeholder="Выберите куда перевести"
+        v-model="toAccount"
+        :disabled="!fromAccount"
+        :exclude_id="fromAccount?.id"
+        :required_currency="fromAccount?.currency_id"
+        :username_from="username"
+        class="w-1/1 mb-4"
+        placeholder="Выберите куда перевести"
       />
     </div>
 
     <InputGroup>
       <InputNumber
-          v-model="amount"
-          :disabled="!enabledMoneyInput"
-          :max-fraction-digits="2"
-          :min="0" :max="fromAccount?.balance ?? 0"
-          locale="ru-RU"
-          fluid
-          @keydown.enter="transfer"
-          placeholder="Сколько перевести"
+        v-model="amount"
+        :disabled="!enabledMoneyInput"
+        :max="fromAccount?.balance ?? 0"
+        :max-fraction-digits="2" :min="0"
+        fluid
+        locale="ru-RU"
+        placeholder="Сколько перевести"
+        @keydown.enter="transfer"
       >
 
       </InputNumber>
@@ -121,7 +122,7 @@ function clear() {
 
   <Button class="w-1/1" v-bind="$attrs" @click="visible = true">
     <slot>
-      {{text.text}}
+      {{ text.text }}
     </slot>
   </Button>
 </template>

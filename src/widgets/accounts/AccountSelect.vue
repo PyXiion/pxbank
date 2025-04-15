@@ -1,6 +1,5 @@
-<script setup lang="ts">
-import {computed, onMounted, ref} from "vue";
-import {useUserStore} from "@/stores/userStore.ts";
+<script lang="ts" setup>
+import {computed, onMounted} from "vue";
 import {useAccountStore} from "@/stores/accountStore.ts";
 import AccountMiniInfo from "@/widgets/accounts/AccountMiniInfo.vue";
 import type {Account} from "@/types.ts";
@@ -14,7 +13,7 @@ interface Props {
   placeholder?: string
 }
 
-const model = defineModel<Account|null>()
+const model = defineModel<Account | null>()
 
 const props = defineProps<Props>()
 
@@ -43,17 +42,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <Select v-model="model" :options="accounts" option-label="name" empty-message="Нет доступных счетов" :placeholder="placeholder" :loading="isLoading">
+  <Select v-model="model" :loading="isLoading" :options="accounts" :placeholder="placeholder"
+          empty-message="Нет доступных счетов" option-label="name">
 
     <template #value="optionProps">
       <AccountMiniInfo v-if="optionProps.value" :data="optionProps.value" show-balance/>
       <span v-else>
-        {{optionProps.placeholder}}
+        {{ optionProps.placeholder }}
       </span>
     </template>
 
     <template #option="optionProps">
-      <AccountMiniInfo class="w-1/1" v-if="optionProps.option" :data="optionProps.option" show-balance/>
+      <AccountMiniInfo v-if="optionProps.option" :data="optionProps.option" class="w-1/1" show-balance/>
     </template>
 
   </Select>
