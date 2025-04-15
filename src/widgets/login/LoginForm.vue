@@ -31,14 +31,27 @@ const password = ref<string | null>(null)
           <div class="field">
             <InputGroup>
               <InputGroupAddon><i class="pi pi-user"></i></InputGroupAddon>
-              <InputText type="text" name="username" v-model="username" placeholder="Ваш никнейм в Майнкрафт"  :input-props="{autocomplete:'username'}"/>
+              <InputText
+                type="text"
+                name="username"
+                v-model="username"
+                placeholder="Ваш никнейм в Майнкрафт"
+                :input-props="{autocomplete:'username'}"
+              />
             </InputGroup>
           </div>
 
           <div class="field">
             <InputGroup>
               <InputGroupAddon><i class="pi pi-lock"></i></InputGroupAddon>
-              <InputText type="password" name="password" v-model="password" placeholder="Ваш пароль" :input-props="{autocomplete:'current-password'}"/>
+              <InputText
+                type="password"
+                name="password"
+                v-model="password"
+                placeholder="Ваш пароль"
+                :input-props="{autocomplete:'current-password'}"
+                @keyup.enter="onClick"
+              />
             </InputGroup>
           </div>
         </div>

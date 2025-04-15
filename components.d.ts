@@ -24,4 +24,7 @@ declare module 'vue' {
     TabList: typeof import('primevue/tablist')['default']
     Tabs: typeof import('primevue/tabs')['default']
   }
+  export interface ComponentCustomProperties {
+    Tooltip: typeof import('primevue/tooltip')['default']
+  }
 }

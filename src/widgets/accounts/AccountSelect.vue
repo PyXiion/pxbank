@@ -10,6 +10,8 @@ interface Props {
 
   required_currency?: number
   exclude_id?: number
+
+  placeholder?: string
 }
 
 const model = defineModel<Account|null>()
@@ -30,7 +32,7 @@ const accounts = computed(() => {
 })
 
 const isLoading = computed(() => !state.value || state.value.isLoading)
-const placeholder = computed(() => isLoading.value ? 'Загрузка...' : 'Выберите счёт')
+const placeholder = computed(() => isLoading.value ? 'Загрузка...' : (props.placeholder ?? 'Выберите счёт'))
 
 onMounted(() => {
   if (!accountStore.hasUser(props.username_from)) {
@@ -44,14 +46,14 @@ onMounted(() => {
   <Select v-model="model" :options="accounts" option-label="name" empty-message="Нет доступных счетов" :placeholder="placeholder" :loading="isLoading">
 
     <template #value="optionProps">
-      <AccountMiniInfo v-if="optionProps.value" :data="optionProps.value"/>
+      <AccountMiniInfo v-if="optionProps.value" :data="optionProps.value" show-balance/>
       <span v-else>
         {{optionProps.placeholder}}
       </span>
     </template>
 
     <template #option="optionProps">
-      <AccountMiniInfo class="w-1/1" v-if="optionProps.option" :data="optionProps.option"/>
+      <AccountMiniInfo class="w-1/1" v-if="optionProps.option" :data="optionProps.option" show-balance/>
     </template>
 
   </Select>

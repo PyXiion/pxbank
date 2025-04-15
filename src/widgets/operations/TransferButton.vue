@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Button from "primevue/button";
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 import Dialog from "primevue/dialog";
 import InputGroup from "primevue/inputgroup";
 import AccountSelect from "@/widgets/accounts/AccountSelect.vue";
@@ -30,11 +30,14 @@ const toAccount = ref<Account|null>(null)
 const accountNumber = ref("")
 const amount = ref<number>(0)
 
-const enabledMoneyInput = computed(() => props.type === 'id' ? !!toAccount.value : !!accountNumber.value)
+const enabledMoneyInput = computed(() => props.type === 'id' ? !!toAccount.value : (!!fromAccount.value &&!!accountNumber.value))
+
+watch(() => visible.value, (visible, oldVisible) => {
+  if (visible === true)
+    clear()
+})
 
 async function transfer() {
-  visible.value = false
-
   const accountStore = useAccountStore()
   try {
     if (props.type === 'id') {
@@ -43,9 +46,17 @@ async function transfer() {
       await accountStore.transferByNumber(fromAccount.value!.id, accountNumber.value, parseFloat(amount.value as any))
     }
     toast.success('Перевод совершён!')
-  } catch (e) {
-    toast.error('Не удалость совершить перевод', e?.toString())
+    visible.value = false
+  } catch (e: any) {
+    toast.error('Не удалость совершить перевод', e?.message ?? e?.toString())
   }
+}
+
+function clear() {
+  fromAccount.value = null
+  toAccount.value = null
+  accountNumber.value = ''
+  amount.value = 0
 }
 
 </script>
@@ -77,6 +88,7 @@ async function transfer() {
           :required_currency="fromAccount?.currency_id"
           :disabled="!fromAccount"
           :exclude_id="fromAccount?.id"
+          placeholder="Выберите куда перевести"
       />
     </div>
 
@@ -89,6 +101,7 @@ async function transfer() {
           locale="ru-RU"
           fluid
           @keydown.enter="transfer"
+          placeholder="Сколько перевести"
       >
 
       </InputNumber>

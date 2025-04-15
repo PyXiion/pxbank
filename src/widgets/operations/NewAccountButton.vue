@@ -17,7 +17,9 @@ const toast = useToaster()
 
 const visible = ref(false)
 
-const accountName = ref(`Личный счёт`)
+const defaultName = `Личный счёт`
+
+const accountName = ref(defaultName)
 const options = ref([
   {
     name: 'Алмазы',
@@ -33,6 +35,8 @@ async function click() {
     await accountStore.create(props.username, accountName.value, currency.value.code)
   } catch (e: any) {
     toast.error('Не удалось создать счёт', e.message ?? e?.toString())
+  } finally {
+    accountName.value = defaultName
   }
 }
 
@@ -58,16 +62,16 @@ async function click() {
       />
     </div>
 
-    <div class="flex items-center mb-8">
-      <label for="currency" class="inline-block w-24">Валюта</label>
-      <Select
-          v-model="currency"
-          name="currency"
-          :options="options"
-          optionLabel="name"
-          class="flex-auto"
-      />
-    </div>
+<!--    <div class="flex items-center mb-8">-->
+<!--      <label for="currency" class="inline-block w-24">Валюта</label>-->
+<!--      <Select-->
+<!--          v-model="currency"-->
+<!--          name="currency"-->
+<!--          :options="options"-->
+<!--          optionLabel="name"-->
+<!--          class="flex-auto"-->
+<!--      />-->
+<!--    </div>-->
 
     <div class="flex justify-end gap-3">
       <Button severity="secondary" @click="visible = false">Отмена</Button>
