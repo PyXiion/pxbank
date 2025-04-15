@@ -20,5 +20,5 @@ const style = computed(() =>
 </script>
 
 <template>
-  <img class="avatar" :src="`https://mc-heads.net/avatar/${name}.png` + (typeof(props.size) == 'number' ? props.size.toString() : 64)" alt="Avatar" :style="style">
+  <img class="avatar" :src="`https://mc-heads.net/avatar/${name}/${typeof(props.size) == 'number' ? props.size.toString() : 64}.png`" alt="Avatar" :style="style">
 </template>
