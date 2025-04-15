@@ -46,7 +46,7 @@ function loginLogoutButton() {
         </TabList>
       </Tabs>
 
-      <div v-if="bp.sm && (!userStore.isLoggedIn || !pushStore.hasPushes && pushStore.canRegister)" class="xl:absolute right-2.5 panel rounded-t-none flex items-center gap-3">
+      <div v-if="bp.sm && userStore.isLoggedIn && !pushStore.hasPushes && pushStore.canRegister" class="xl:absolute right-2.5 panel rounded-t-none flex items-center gap-3">
         <div v-if="userStore.isLoggedIn && !pushStore.hasPushes && pushStore.canRegister">
           <Button
               size="small"
