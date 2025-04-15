@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CurrencyIcon from "@/widgets/utils/CurrencyIcon.vue";
-import {computed} from "vue";
+import {computed, ref, watch} from "vue";
+import {animate} from "animejs";
 
 interface Props {
   amount: number|string
@@ -13,17 +14,46 @@ const props = withDefaults(defineProps<Props>(), {
   iconPos: 'hide'
 })
 
-const balance = computed(() => typeof(props.amount) === 'string' ? parseFloat(props.amount) : props.amount)
+const currentBalance = ref(typeof(props.amount) === 'string' ? parseFloat(props.amount) : props.amount)
+
+const displayBalance = computed(() => {
+  let x = currentBalance.value
+  let suffix = ''
+  while (x > 1000) {
+    x /= 1000
+    suffix += 'К'
+  }
+
+  return {
+    main: Math.trunc(x),
+    kopeiki: Math.round(x * 100 % 100).toString().padStart(2, '0'),
+    suffix: suffix
+  }
+})
+
+watch(() => props.amount, () => {
+  animate(currentBalance, {
+    value: props.amount
+  })
+})
 
 </script>
 
 <template>
-  <div class="font-[Minecraft] flex">
+  <div class="font-[Minecraft] flex cursor-default">
     <CurrencyIcon v-if="iconPos === 'left' && currencyId" :currency-id="currencyId!" :size="currencyIconSize ?? 32"/>
 
-    <div class="ml-1 flex place-items-end">
-      <span class="height">{{Math.trunc(balance)}}</span>
-      <span class="smaller opacity-50">.{{(balance * 100 % 100).toString().padStart(2, "0")}}</span>
+    <div
+      v-tooltip="{
+        value: currentBalance.toFixed(2),
+        showDelay: 500,
+        hideDelay: 300
+      }"
+      class="ml-1 flex place-items-end"
+    >
+      <span class="height">{{displayBalance.main}}</span>
+      <span class="smaller opacity-50">.{{displayBalance.kopeiki}}</span>
+      <span class="smaller">{{ displayBalance.suffix }}</span>
     </div>
 
     <CurrencyIcon v-if="iconPos === 'right' && currencyId" :currency-id="currencyId!" :size="currencyIconSize ?? 32"/>
