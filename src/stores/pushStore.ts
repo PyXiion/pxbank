@@ -1,24 +1,14 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
 import {useProtocol} from "@/stores/protocolStore.ts";
-import {useToaster} from "@/utils/toaster.ts";
-
-function base64ToArrayBuffer(base64: string) {
-    var binaryString = atob(base64);
-    var bytes = new Uint8Array(binaryString.length);
-    for (var i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes.buffer;
-}
 
 export const usePushStore = defineStore('push-notifications', () => {
-    const {protocol} = useProtocol()
 
     const hasPushes = ref(false)
     const canRegister = ref(false)
 
     async function requestPushes() {
+        const {protocol} = useProtocol()
         const permission = await Notification.requestPermission()
         if (permission !== 'granted') {
             console.error('Браузер отклонил запрос на уведомления')
@@ -37,6 +27,7 @@ export const usePushStore = defineStore('push-notifications', () => {
     }
 
     async function getPublicKey(): Promise<string> {
+        const {protocol} = useProtocol()
         return await protocol.send('push/key')
     }
 
@@ -46,6 +37,7 @@ export const usePushStore = defineStore('push-notifications', () => {
             hasPushes.value = false
             return false
         }
+        const {protocol} = useProtocol()
 
         const v: boolean = await protocol.send('push/is_alive', {id: subId})
 
