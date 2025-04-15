@@ -1,6 +1,5 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 
-import iconUrl from "@/assets/icon.png";
 import {ref} from "vue";
 
 import InputText from 'primevue/inputtext';
@@ -32,11 +31,11 @@ const password = ref<string | null>(null)
             <InputGroup>
               <InputGroupAddon><i class="pi pi-user"></i></InputGroupAddon>
               <InputText
-                type="text"
-                name="username"
                 v-model="username"
-                placeholder="Ваш никнейм в Майнкрафт"
                 :input-props="{autocomplete:'username'}"
+                name="username"
+                placeholder="Ваш никнейм в Майнкрафт"
+                type="text"
               />
             </InputGroup>
           </div>
@@ -45,11 +44,11 @@ const password = ref<string | null>(null)
             <InputGroup>
               <InputGroupAddon><i class="pi pi-lock"></i></InputGroupAddon>
               <InputText
-                type="password"
-                name="password"
                 v-model="password"
-                placeholder="Ваш пароль"
                 :input-props="{autocomplete:'current-password'}"
+                name="password"
+                placeholder="Ваш пароль"
+                type="password"
                 @keyup.enter="onClick"
               />
             </InputGroup>
@@ -63,7 +62,7 @@ const password = ref<string | null>(null)
         <p class="opacity-60 text-center cursor-pointer" @click="slider = !slider">Как зарегистрироваться?</p>
       </div>
 
-      <div class="sign-up-info flex flex-col" v-else>
+      <div v-else class="sign-up-info flex flex-col">
         <h2 class="text-center text-xl mb-3">Регистрация</h2>
 
         <div class="mb-5 p-4">
@@ -72,7 +71,7 @@ const password = ref<string | null>(null)
           <p>Для регистрации и получения доступа к банковской системе обратитесь к одному из работников банка.</p>
         </div>
 
-        <Button severity="contrast" class="mx-auto" @click="slider = !slider">Ладно</Button>
+        <Button class="mx-auto" severity="contrast" @click="slider = !slider">Ладно</Button>
       </div>
     </Transition>
   </div>

@@ -26,7 +26,7 @@ const displayBalance = computed(() => {
 
   return {
     main: Math.trunc(x),
-    kopeiki: Math.round(x * 100 % 100).toString().padStart(2, '0'),
+    kopeiki: (Math.round(x * 100) % 100).toString().padStart(2, '0'),
     suffix: suffix
   }
 })

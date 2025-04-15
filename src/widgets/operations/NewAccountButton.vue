@@ -1,8 +1,7 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {ref} from 'vue'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
-import {Select} from 'primevue'
 import Button from 'primevue/button'
 import {useAccountStore} from "@/stores/accountStore.ts";
 import {useToaster} from "@/utils/toaster.ts";
@@ -10,6 +9,7 @@ import {useToaster} from "@/utils/toaster.ts";
 interface Props {
   username: string
 }
+
 const props = defineProps<Props>()
 
 const accountStore = useAccountStore()
@@ -43,35 +43,35 @@ async function click() {
 </script>
 
 <template>
-  <Button @click="visible = true" v-bind="$attrs">Открыть счёт</Button>
+  <Button v-bind="$attrs" @click="visible = true">Открыть счёт</Button>
 
   <Dialog
-      modal
-      header="Новый счёт"
-      v-model:visible="visible"
-      :style="{ width: '25rem' }"
+    v-model:visible="visible"
+    :style="{ width: '25rem' }"
+    header="Новый счёт"
+    modal
   >
     <span class="block mb-3 text-surface-500 dark:text-surface-400">Введите информацию о счёте</span>
 
     <div class="flex items-center mb-4">
-      <label for="username" class="inline-block w-24">Название</label>
+      <label class="inline-block w-24" for="username">Название</label>
       <InputText
-          name="username"
-          v-model="accountName"
-          class="flex-auto"
+        v-model="accountName"
+        class="flex-auto"
+        name="username"
       />
     </div>
 
-<!--    <div class="flex items-center mb-8">-->
-<!--      <label for="currency" class="inline-block w-24">Валюта</label>-->
-<!--      <Select-->
-<!--          v-model="currency"-->
-<!--          name="currency"-->
-<!--          :options="options"-->
-<!--          optionLabel="name"-->
-<!--          class="flex-auto"-->
-<!--      />-->
-<!--    </div>-->
+    <!--    <div class="flex items-center mb-8">-->
+    <!--      <label for="currency" class="inline-block w-24">Валюта</label>-->
+    <!--      <Select-->
+    <!--          v-model="currency"-->
+    <!--          name="currency"-->
+    <!--          :options="options"-->
+    <!--          optionLabel="name"-->
+    <!--          class="flex-auto"-->
+    <!--      />-->
+    <!--    </div>-->
 
     <div class="flex justify-end gap-3">
       <Button severity="secondary" @click="visible = false">Отмена</Button>
