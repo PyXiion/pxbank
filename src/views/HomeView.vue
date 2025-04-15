@@ -69,14 +69,14 @@ onMounted(() => {
   <div class="slide-away">
     <div
       class="absolute max-sm:w-1/1 max-sm:h-1/1 sm:top-1/2
-      sm:left-1/2 sm:transform-[translate(-50%,-50%)] w-[500px] h-[600px] flex flex-col p-10"
+      sm:left-1/2 sm:transform-[translate(-50%,-50%)] w-[500px] h-[600px] flex flex-col p-10 items-center justify-center"
     >
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:w-[20em]">
-        <img ref="logo" :src="iconUrl" alt="Ignis Verde logo" class="verde w-[10em] z-100 sm:bg-neutral-100 sm:dark:bg-neutral-800">
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:w-[10em] sm:translate-x-5 -mt-30">
+        <img ref="logo" :src="iconUrl" alt="Ignis Verde logo" class="verde w-[8em] z-100 sm:bg-neutral-100 sm:dark:bg-neutral-800">
 
-        <div ref="logoText" style="opacity: 0;">
-          <p class="text-5xl font-medium text-nowrap">Ignis Verde</p>
-          <p ref="subLogoText" class="text-3xl text-nowrap" style="opacity: 0;">Банк</p>
+        <div ref="logoText" style="opacity: 0;" class="ml-[1em]">
+          <p class="text-5xl font-medium text-nowrap max-sm:text-center">Ignis Verde</p>
+          <p ref="subLogoText" class="text-3xl text-nowrap max-sm:text-center" style="opacity: 0;">Банк</p>
         </div>
       </div>
 
@@ -102,7 +102,7 @@ onMounted(() => {
 }
 @media (prefers-color-scheme: dark) {
   .verde {
-    box-shadow: 30px 0 30px var(--color-neutral-800);
+    box-shadow: 20px 0 20px var(--color-neutral-800);
   }
 }
 
