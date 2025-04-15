@@ -4,6 +4,7 @@ import Toast from 'primevue/toast';
 import Header from "@/Header.vue";
 import {useBreakpoints} from "@/widgets/utils/useBreakpoints.ts";
 import MobileSideBar from "@/MobileSideBar.vue";
+import GamemodeListener from "@/widgets/meme/GamemodeListener.vue";
 
 const route = useRoute()
 const bp = useBreakpoints()
@@ -11,12 +12,14 @@ const bp = useBreakpoints()
 </script>
 
 <template>
+  <Toast class="max-w-2/3"/>
+
   <Header v-if="!route.meta.hideHeader"/>
   <MobileSideBar v-if="bp.maxSm"/>
   <RouterView/>
 
 
-  <Toast class="max-w-2/3"/>
+  <GamemodeListener/>
 </template>
 
 <style scoped>
