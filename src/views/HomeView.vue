@@ -2,6 +2,9 @@
 import iconUrl from "@/assets/icon.png";
 import {onMounted, ref} from "vue";
 import {createTimeline} from "animejs";
+import {useBreakpoints} from "@/widgets/utils/useBreakpoints.ts";
+
+const bp = useBreakpoints()
 
 const logo = ref<HTMLElement>()
 const logoText = ref<HTMLElement>()
@@ -24,14 +27,14 @@ onMounted(() => {
       }
     })
     .add(logo.value!, {
-      x: [{
+      x: bp.sm ? [{
         from: 100,
         to: 100,
         duration: 1000
       }, {
         from: 100,
-        to: '-40px'
-      }],
+        to: 0
+      }] : {},
       scale: {
         from: 5,
         ease: 'outBounce',
@@ -68,9 +71,10 @@ onMounted(() => {
       class="absolute max-sm:w-1/1 max-sm:h-1/1 sm:top-1/2
       sm:left-1/2 sm:transform-[translate(-50%,-50%)] w-[500px] h-[600px] flex flex-col p-10"
     >
-      <div class="flex items-center gap-3 relative w-[20em]">
-        <img ref="logo" :src="iconUrl" alt="Ignis Verde logo" class="verde w-[10em] z-100 bg-neutral-100 dark:bg-neutral-800 dark:verde-dark">
-        <div ref="logoText" style="opacity: 0; width: 0;">
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:w-[20em]">
+        <img ref="logo" :src="iconUrl" alt="Ignis Verde logo" class="verde w-[10em] z-100 sm:bg-neutral-100 sm:dark:bg-neutral-800">
+
+        <div ref="logoText" style="opacity: 0;">
           <p class="text-5xl font-medium text-nowrap">Ignis Verde</p>
           <p ref="subLogoText" class="text-3xl text-nowrap" style="opacity: 0;">Банк</p>
         </div>

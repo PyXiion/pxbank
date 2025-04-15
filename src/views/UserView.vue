@@ -36,7 +36,7 @@ function loginLogoutButton() {
 <template>
   <div>
     <div class="max-w-[1020px] pt-3 sm:p-3 w-1/1 h-1/1 mx-auto flex flex-col sm:flex-row gap-3">
-      <aside class="ml-0 min-w-12/50 w-fit max-w-2/7">
+      <aside class="ml-0 min-w-[17em] sm:w-fit sm:max-w-2/7">
         <section class="panel text-2xl font-bold flex items-center mb-3 justify-center">
           <img :src="iconUrl" alt="Ignis Verde logo" class="h-8 mr-3">
           <span>Ignis Verde</span>
