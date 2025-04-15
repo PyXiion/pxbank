@@ -1,48 +1,19 @@
 <script lang="ts" setup>
-import {useProtocol} from "@/stores/protocolStore.ts";
 import {ref} from "vue";
-import {useToaster} from "@/utils/toaster.ts";
+import AdminChangePasswordDialog from "@/widgets/admin/AdminChangePasswordDialog.vue";
 
 interface Props {
   username: string
 }
 
-const props = defineProps<Props>()
-const toast = useToaster()
+defineProps<Props>()
 
 const visible = ref(false);
-const password = ref('')
-
-async function click() {
-  const {protocol} = useProtocol()
-  try {
-    await protocol.send('admin/change_password', {
-      username: props.username,
-      password: password.value
-    })
-    toast.success('Пароль изменён')
-  } catch (e: any) {
-    toast.error('Ошибка', e?.message ?? e.toString())
-  } finally {
-    visible.value = false
-  }
-}
 
 </script>
 
 <template>
-  <Dialog
-    modal
-    v-model:visible="visible"
-    :header="`Смена пароля для ${username}`"
-  >
-    <div class="flex flex-col gap-3 py-3">
-      <InputText v-model="password"/>
-
-      <Button @click="click">Установить</Button>
-    </div>
-
-  </Dialog>
+  <AdminChangePasswordDialog v-model:visible="visible" :username="username"/>
   <Button @click="visible = !visible" v-bind="$attrs">
     <slot>Поменять пароль</slot>
   </Button>

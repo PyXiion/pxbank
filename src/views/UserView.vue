@@ -10,6 +10,7 @@ import {useBreakpoints} from "@/widgets/utils/useBreakpoints.ts";
 import iconUrl from "@/assets/icon.png";
 import AdminChangePasswordButton from "@/widgets/admin/AdminChangePasswordButton.vue";
 import ChangePasswordButton from "@/widgets/user/ChangePasswordButton.vue";
+import AdminNewUserButton from "@/widgets/admin/AdminNewUserButton.vue";
 
 const userStore = useUserStore()
 const route = useRoute()
@@ -35,7 +36,7 @@ function loginLogoutButton() {
 <template>
   <div>
     <div class="max-w-[1020px] pt-3 sm:p-3 w-1/1 h-1/1 mx-auto flex flex-col sm:flex-row gap-3">
-      <aside class="ml-0 w-fit max-w-2/7">
+      <aside class="ml-0 min-w-12/50 w-fit max-w-2/7">
         <section class="panel text-2xl font-bold flex items-center mb-3 justify-center">
           <img :src="iconUrl" alt="Ignis Verde logo" class="h-8 mr-3">
           <span>Ignis Verde</span>
@@ -43,15 +44,15 @@ function loginLogoutButton() {
         <section id="user-info" class="panel mb-3 flex flex-col gap-3">
           <UserInfo :username="username" />
 
-          <div class="flex gap-3 flex-wrap">
+          <div class="flex gap-3 flex-wrap" v-if="isOwn">
             <ChangePasswordButton size="small"  class="h-8"/>
-            <Button v-if="isOwn" severity="secondary" size="small" class="h-8" @click="loginLogoutButton">
+            <Button severity="secondary" size="small" class="h-8" @click="loginLogoutButton">
               Выйти
             </Button>
           </div>
         </section>
 
-        <section>
+        <section v-if="isOwn || userStore.isAdmin">
           <AccountListWidget :username="username"/>
         </section>
       </aside>
@@ -75,7 +76,10 @@ function loginLogoutButton() {
             <div v-if="userStore.isAdmin">
               <p class="section-name mb-3"><i class="pi pi-wrench"/> Админка <i class="pi pi-wrench"/></p>
 
-              <AdminChangePasswordButton :username="username"/>
+              <div class="flex gap-3">
+                <AdminNewUserButton/>
+                <AdminChangePasswordButton :username="username"/>
+              </div>
             </div>
 
           </section>
