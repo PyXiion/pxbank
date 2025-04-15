@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useUserStore} from "@/stores/userStore.ts";
 import {useRoute, useRouter} from "vue-router";
-import {ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {useBreakpoints} from "@/widgets/utils/useBreakpoints.ts";
 import iconUrl from "@/assets/icon.png";
 import {usePushStore} from "@/stores/pushStore.ts";
@@ -15,7 +15,7 @@ const bp = useBreakpoints()
 
 const items = ref([
   {route: '', label: 'Маркетплейс (WIP)', icon: 'pi pi-shopping-bag', disabled: true},
-  {route: 'home', label: 'Банк', icon: 'pi pi-home'},
+  {route: computed(() => userStore.isLoggedIn ? `/${userStore.state.user.username}` : '/login'), label: 'Банк', icon: 'pi pi-home'},
   {route: '', label: 'Все транзакции (WIP)', icon: 'pi pi-database', disabled: true},
 ])
 
@@ -38,7 +38,7 @@ function loginLogoutButton() {
       <Tabs class="mx-auto sm:panel-no-p rounded-t-none! overflow-hidden" :value="route.name?.toString() as any" scrollable>
         <TabList>
           <Tab v-for="tab in items" :key="tab.label" :value="tab.route" :disabled="!!tab.disabled">
-            <a class="flex items-center gap-2 text-inherit font-bold" href="">
+            <a class="flex items-center gap-2 text-inherit font-bold" :href="tab.route">
               <i :class="tab.icon"/>
               <span>{{ tab.label }}</span>
             </a>
