@@ -138,16 +138,11 @@ export const useUserStore = defineStore('user', () => {
             throw new Error('Not authenticated')
         }
 
-        try {
-            const {protocol} = useProtocol();
-            await protocol.send('auth/update_password', {
-                old_password: oldPassword,
-                new_password: newPassword
-            })
-        } catch (error) {
-            state.value.error = error instanceof Error ? error.message : 'Password update failed'
-            throw error
-        }
+        const {protocol} = useProtocol();
+        await protocol.send('auth/update_password', {
+            old_password: oldPassword,
+            new_password: newPassword
+        })
     }
 
     // Автопроверка при инициализации
