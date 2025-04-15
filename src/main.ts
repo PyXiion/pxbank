@@ -9,6 +9,7 @@ import PrimeVue from 'primevue/config';
 import LARA from '@primeuix/themes/lara';
 import {ConfirmationService} from "primevue";
 import ToastService from 'primevue/toastservice';
+import Tooltip from 'primevue/tooltip';
 
 const app = createApp(App)
 
@@ -25,5 +26,7 @@ app.use(PrimeVue, {
     }
 })
 app.use(ConfirmationService)
+
+app.directive('tooltip', Tooltip)
 
 app.mount('#app')
