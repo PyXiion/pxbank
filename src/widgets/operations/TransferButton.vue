@@ -3,7 +3,6 @@ import Button from "primevue/button";
 import {computed, ref} from "vue";
 import Dialog from "primevue/dialog";
 import InputGroup from "primevue/inputgroup";
-import InputText from "primevue/inputtext";
 import AccountSelect from "@/widgets/accounts/AccountSelect.vue";
 import type {Account} from "@/types.ts";
 import CurrencyIcon from "@/widgets/utils/CurrencyIcon.vue";
@@ -20,10 +19,10 @@ const toast = useToaster()
 const visible = ref(false)
 const text = computed(() => props.type === 'number' ? {
   text: "Перевод по номеру",
-  details: 'Тут вы можете перевести средства меж своих счетов.'
+  details: 'Тут вы можете отправить деньги на чужой счёт по номеру этого счёта.'
 } : {
   text: "Перевод между счетами",
-  details: 'Тут вы можете отправить деньги на чужой счёт по номеру этого счёта.'
+  details: 'Тут вы можете перевести средства меж своих счетов.'
 })
 
 const fromAccount = ref<Account|null>(null)
