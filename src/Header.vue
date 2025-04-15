@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import {useUserStore} from "@/stores/userStore.ts";
 import {useRoute, useRouter} from "vue-router";
-import {computed, onMounted, ref} from "vue";
+import {computed, ref} from "vue";
 import {useBreakpoints} from "@/widgets/utils/useBreakpoints.ts";
-import iconUrl from "@/assets/icon.png";
 import {usePushStore} from "@/stores/pushStore.ts";
-import MobileSideBar from "@/App.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -46,7 +44,7 @@ function loginLogoutButton() {
         </TabList>
       </Tabs>
 
-      <div v-if="bp.sm && userStore.isLoggedIn && !pushStore.hasPushes && pushStore.canRegister" class="xl:absolute right-2.5 panel rounded-t-none flex items-center gap-3">
+      <div v-if="bp.sm && (!userStore.isLoggedIn || (!pushStore.hasPushes && pushStore.canRegister))" class="xl:absolute right-2.5 panel rounded-t-none flex items-center gap-3">
         <div v-if="userStore.isLoggedIn && !pushStore.hasPushes && pushStore.canRegister">
           <Button
               size="small"
@@ -57,7 +55,6 @@ function loginLogoutButton() {
             <i class="pi pi-bell"></i>
           </Button>
         </div>
-
         <Button v-if="!userStore.isLoggedIn" size="small" @click="loginLogoutButton">Войти</Button>
       </div>
     </div>
