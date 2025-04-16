@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import {useProtocol} from "@/stores/protocolStore.ts";
+import {useUserStore} from "@/stores/userStore.ts";
 
 export const usePushStore = defineStore('push-notifications', () => {
 
@@ -52,8 +53,19 @@ export const usePushStore = defineStore('push-notifications', () => {
         canRegister.value = 'serviceWorker' in navigator
     }
 
-    checkSub()
-    checkCanRegister()
+    const userStore = useUserStore()
+    if (userStore.isLoggedIn) {
+        checkSub()
+        checkCanRegister()
+    } else {
+        const unwatch = watchEffect(() => {
+            if (userStore.isLoggedIn) {
+                checkSub()
+                checkCanRegister()
+                unwatch()
+            }
+        })
+    }
 
     return {
         hasPushes,
