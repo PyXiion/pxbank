@@ -19,14 +19,16 @@ const currentBalance = ref(typeof(props.amount) === 'string' ? parseFloat(props.
 const displayBalance = computed(() => {
   let x = currentBalance.value
   let suffix = ''
-  while (x > 1000) {
+  while (x > 990) {
     x /= 1000
     suffix += 'К'
   }
 
+  const [main, kopeiki] = x.toFixed(2).split('.')
+
   return {
-    main: Math.trunc(x),
-    kopeiki: (Math.round(x * 100) % 100).toString().padStart(2, '0'),
+    main,
+    kopeiki,
     suffix: suffix
   }
 })
