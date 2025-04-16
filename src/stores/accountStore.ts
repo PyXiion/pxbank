@@ -110,11 +110,12 @@ export const useAccountStore = defineStore('accountStore', () => {
         }
     }
 
-    async function transfer(from_account_id: number, to_account_id: number, amount: number) {
+    async function transfer(from_account_id: number, to_account_id: number, amount: number, comment: string | null) {
         await protocol.send('accounts/transfer', {
             from_account_id,
             to_account_id,
-            amount
+            amount,
+            comment
         })
 
         const fromAccount = getById(from_account_id)
@@ -126,12 +127,13 @@ export const useAccountStore = defineStore('accountStore', () => {
             toAccountId.balance += amount
     }
 
-    async function transferByNumber(from_account_id: number, number: string, amount: number) {
+    async function transferByNumber(from_account_id: number, number: string, amount: number, comment: string | null) {
         number = number.replace(/\D/g, "")
         await protocol.send('accounts/transfer/by_number', {
             from_account_id,
             to_account_number: number,
-            amount
+            amount,
+            comment
         })
 
         const fromAccount = getById(from_account_id)

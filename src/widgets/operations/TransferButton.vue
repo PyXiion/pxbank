@@ -9,6 +9,7 @@ import CurrencyIcon from "@/widgets/utils/CurrencyIcon.vue";
 import {useAccountStore} from "@/stores/accountStore.ts";
 import {useToaster} from "@/utils/toaster.ts";
 import {useTransanctionStore} from "@/stores/transactionStore.ts";
+import {animate, utils} from "animejs";
 
 interface Props {
   type: 'number' | 'id'
@@ -27,12 +28,19 @@ const text = computed(() => props.type === 'number' ? {
   details: 'Тут вы можете перевести средства меж своих счетов.'
 })
 
+const MAX_COMMENT_LENGTH = 256
+
 const fromAccount = ref<Account | null>(null)
 const toAccount = ref<Account | null>(null)
 const accountNumber = ref("")
 const amount = ref<number>(0)
+const comment = ref<string>("")
 
 const enabledMoneyInput = computed(() => props.type === 'id' ? !!toAccount.value : (!!fromAccount.value && !!accountNumber.value))
+
+const scalars = ref([1, 9])
+const currentScalarIndex = ref(0)
+const scalarSpan = ref<HTMLSpanElement>()
 
 watch(() => visible.value, (visible) => {
   if (visible === true)
@@ -42,10 +50,12 @@ watch(() => visible.value, (visible) => {
 async function transfer() {
   const accountStore = useAccountStore()
   try {
+    // parseFloat because for some reason InputNumber returns string
+    const realAmount = parseFloat(amount.value as any) * scalars.value[currentScalarIndex.value];
     if (props.type === 'id') {
-      await accountStore.transfer(fromAccount.value!.id, toAccount.value!.id, parseFloat(amount.value as any))
+      await accountStore.transfer(fromAccount.value!.id, toAccount.value!.id, realAmount, comment.value)
     } else {
-      await accountStore.transferByNumber(fromAccount.value!.id, accountNumber.value, parseFloat(amount.value as any))
+      await accountStore.transferByNumber(fromAccount.value!.id, accountNumber.value, realAmount, comment.value)
     }
     toast.success('Перевод совершён!')
     visible.value = false
@@ -61,6 +71,17 @@ function clear() {
   toAccount.value = null
   accountNumber.value = ''
   amount.value = 0
+  comment.value = ""
+}
+
+function nextScalar() {
+  currentScalarIndex.value = (currentScalarIndex.value + 1) % scalars.value.length
+  animate(scalarSpan.value!, {
+    textContent: `x${scalars.value[currentScalarIndex.value]}`,
+    modifier: utils.round(0),
+    duration: 600,
+    ease: 'outExpo'
+  })
 }
 
 </script>
@@ -96,7 +117,14 @@ function clear() {
       />
     </div>
 
-    <InputGroup>
+    <InputGroup class="mb-4">
+      <InputGroupAddon>
+        <Transition name="reappear-transition">
+          <i v-if="!fromAccount" class="pi pi-money-bill"></i>
+          <CurrencyIcon v-else :currency-id="fromAccount.currency_id"/>
+        </Transition>
+      </InputGroupAddon>
+
       <InputNumber
         v-model="amount"
         :disabled="!enabledMoneyInput"
@@ -109,13 +137,27 @@ function clear() {
       >
 
       </InputNumber>
-      <InputGroupAddon>
-        <Transition name="reappear-transition">
-          <i v-if="!fromAccount" class="pi pi-money-bill"></i>
-          <CurrencyIcon v-else :currency-id="fromAccount.currency_id"/>
-        </Transition>
+      <InputGroupAddon class="cursor-pointer overflow-hidden" @click="nextScalar">
+        <span ref="scalarSpan">
+          x1
+        </span>
       </InputGroupAddon>
     </InputGroup>
+
+    <InputGroup>
+      <InputGroupAddon class="cursor-pointer overflow-hidden" @click="nextScalar">
+        <i class="pi pi-pencil"/>
+      </InputGroupAddon>
+      <InputText
+        v-model="comment"
+        placeholder="Комментарий"
+        :maxlength="MAX_COMMENT_LENGTH"
+      />
+    </InputGroup>
+
+    <div class="text-right opacity-50" :class="(MAX_COMMENT_LENGTH - comment.length) < 32 ? ['text-red-500'] : []">
+      {{MAX_COMMENT_LENGTH - comment.length}}
+    </div>
 
     <div class="flex justify-end gap-3 mt-8">
       <Button severity="secondary" @click="visible = false">Отмена</Button>

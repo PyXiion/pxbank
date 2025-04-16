@@ -25,6 +25,7 @@ export interface Transaction {
     receiver_name: string
 
     amount: number
+    comment?: string | null
     currency_id: number
 
     timestamp: number

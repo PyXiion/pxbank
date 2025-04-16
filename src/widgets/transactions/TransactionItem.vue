@@ -2,7 +2,6 @@
 import type {Transaction} from "@/types.ts";
 import Avatar from "@/widgets/utils/Avatar.vue";
 import TimestampWidget from "@/widgets/utils/TimestampWidget.vue";
-import CurrencyIcon from "@/widgets/utils/CurrencyIcon.vue";
 import {computed} from "vue";
 import {useAccountStore} from "@/stores/accountStore.ts";
 import MoneyWidget from "@/widgets/accounts/MoneyWidget.vue";
@@ -109,6 +108,12 @@ const toAccount = computed(() => {
         <div class="text-xs text-gray-500">
           {{ fromAccount?.name || 'Счёт №' + transaction.from_account_number }} →
           {{ toAccount?.name || 'Счёт №' + transaction.to_account_number }}
+        </div>
+      </template>
+
+      <template v-if="transaction.comment">
+        <div>
+          {{transaction.comment}}
         </div>
       </template>
     </div>
