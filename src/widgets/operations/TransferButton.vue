@@ -8,6 +8,7 @@ import type {Account} from "@/types.ts";
 import CurrencyIcon from "@/widgets/utils/CurrencyIcon.vue";
 import {useAccountStore} from "@/stores/accountStore.ts";
 import {useToaster} from "@/utils/toaster.ts";
+import {useTransanctionStore} from "@/stores/transactionStore.ts";
 
 interface Props {
   type: 'number' | 'id'
@@ -48,6 +49,8 @@ async function transfer() {
     }
     toast.success('Перевод совершён!')
     visible.value = false
+
+    useTransanctionStore().update()
   } catch (e: any) {
     toast.error('Не удалость совершить перевод', e?.message ?? e?.toString())
   }
