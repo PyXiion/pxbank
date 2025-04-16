@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {computed, reactive, ref} from "vue";
+import {reactive, ref} from "vue";
 import {type Account} from "@/types.ts";
 import {useProtocol} from "@/stores/protocolStore.ts";
 
