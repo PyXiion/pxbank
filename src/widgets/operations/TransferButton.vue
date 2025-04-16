@@ -72,6 +72,7 @@ function clear() {
   accountNumber.value = ''
   amount.value = 0
   comment.value = ""
+  currentScalarIndex.value = 0
 }
 
 function nextScalar() {
