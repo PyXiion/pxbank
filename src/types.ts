@@ -3,7 +3,11 @@ interface AccountPublicInfo {
     number: string
 }
 
-export interface Account extends AccountPublicInfo {
+export interface AccountSettings {
+    is_public: boolean
+}
+
+export interface Account extends AccountPublicInfo, AccountSettings {
     id: number
     name: string
     order_id: number

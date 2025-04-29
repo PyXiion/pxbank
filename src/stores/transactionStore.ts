@@ -19,6 +19,8 @@ export const useTransanctionStore = defineStore('transactionStore', () => {
 
     async function fetchTransactions(username: string, page = 1) {
         isLoading.value = true;
+        error.value = null;
+        transactions.value = []
 
         try {
             const body = {

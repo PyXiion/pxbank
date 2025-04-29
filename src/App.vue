@@ -13,6 +13,7 @@ const bp = useBreakpoints()
 
 <template>
   <Toast class="max-w-2/3"/>
+  <ConfirmDialog/>
 
   <Header v-if="!route.meta.hideHeader"/>
   <MobileSideBar v-if="bp.maxSm"/>

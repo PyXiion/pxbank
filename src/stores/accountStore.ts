@@ -1,6 +1,6 @@
 import {defineStore} from "pinia";
 import {reactive, ref} from "vue";
-import {type Account} from "@/types.ts";
+import {type Account, type AccountSettings} from "@/types.ts";
 import {useProtocol} from "@/stores/protocolStore.ts";
 
 export interface AccountState {
@@ -13,7 +13,7 @@ export interface AccountState {
 export const useAccountStore = defineStore('accountStore', () => {
     const {protocol} = useProtocol()
     const users = ref<{ [name: string]: AccountState }>({})
-    const userById = reactive<{ [id: number]: string }>({})
+    const userById = ref<{ [id: number]: string }>({})
 
     function getOrCreateState(username: string) {
         if (!(username in users.value)) {
@@ -30,6 +30,7 @@ export const useAccountStore = defineStore('accountStore', () => {
         const state = getOrCreateState(username)
         state.error = null
         state.isLoading = true
+        state.accounts = []
         try {
             const response = await protocol.send('accounts/fetch', {
                 username
@@ -38,7 +39,7 @@ export const useAccountStore = defineStore('accountStore', () => {
             clearUser(username)
             state.accounts = response.accounts
             state.accounts.forEach(x => {
-                userById[x.id] = username
+                userById.value[x.id] = username
             })
         } catch (e) {
             state.error = e
@@ -53,7 +54,7 @@ export const useAccountStore = defineStore('accountStore', () => {
         const state = users.value[username]
 
         for (const acc of state.accounts) {
-            delete userById[acc.id]
+            delete userById.value[acc.id]
         }
 
         delete users.value[username]
@@ -68,15 +69,15 @@ export const useAccountStore = defineStore('accountStore', () => {
 
         if (username in users.value) {
             users.value[username].accounts.push(acc)
-            userById[acc.id] = username
+            userById.value[acc.id] = username
         }
     }
 
     function getById(id: number) {
         if (!(id in userById))
-            return null
+            return undefined
 
-        const accounts = users.value[userById[id]].accounts
+        const accounts = users.value[userById.value[id]].accounts
         return accounts.find(x => x.id == id)
     }
 
@@ -98,8 +99,8 @@ export const useAccountStore = defineStore('accountStore', () => {
         })
 
         if (id in userById) {
-            const username = userById[id]
-            delete userById[id]
+            const username = userById.value[id]
+            delete userById.value[id]
 
             const accounts = users.value[username].accounts
 
@@ -107,6 +108,18 @@ export const useAccountStore = defineStore('accountStore', () => {
                 accounts.findIndex(x => x.id == id),
                 1
             )
+        }
+    }
+
+    async function setSettings(id: number, settings: AccountSettings) {
+        await protocol.send('accounts/settings', {
+            account_id: id,
+            ...settings
+        })
+
+        const acc = getById(id)
+        if (acc) {
+            Object.assign(acc, settings)
         }
     }
 
@@ -142,6 +155,10 @@ export const useAccountStore = defineStore('accountStore', () => {
             fromAccount.balance -= amount
     }
 
+    async function setAccountPublic(account_id: number, is_public: boolean) {
+        await protocol.send('accounts/public', {account_id, is_public})
+    }
+
     return {
         users,
         clearUser,
@@ -150,6 +167,7 @@ export const useAccountStore = defineStore('accountStore', () => {
         create,
         renameOne,
         deleteOne,
+        setSettings,
         getById,
 
         transfer,

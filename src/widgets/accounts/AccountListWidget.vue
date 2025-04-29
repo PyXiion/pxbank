@@ -2,7 +2,7 @@
 
 import Account from "@/widgets/accounts/AccountWidget.vue";
 import {type AccountState, useAccountStore} from "@/stores/accountStore.ts";
-import {computed, onActivated, onMounted, ref} from "vue";
+import {computed, onActivated, onMounted, ref, watch} from "vue";
 import NewAccountButton from "@/widgets/operations/NewAccountButton.vue";
 
 interface Props {
@@ -14,12 +14,6 @@ const accountStore = useAccountStore()
 
 const state = computed(() => accountStore.users[props.username])
 
-onMounted(() => {
-  if (!accountStore.hasUser(props.username)) {
-    accountStore.fetchUser(props.username)
-  }
-})
-
 const errorText = computed(() => {
   if (state.value && state.value.error instanceof Error) {
     return state.value.error.message
@@ -27,6 +21,16 @@ const errorText = computed(() => {
 
   return state.value?.error?.toString()
 })
+
+function fetchUser() {
+  if (!accountStore.hasUser(props.username)) {
+    accountStore.fetchUser(props.username)
+  }
+}
+
+onMounted(fetchUser)
+
+watch(() => props.username, fetchUser)
 
 
 </script>

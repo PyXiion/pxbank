@@ -16,6 +16,7 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(ToastService);
+app.use(ConfirmationService)
 app.use(PrimeVue, {
     // Default theme configuration
     theme: {
@@ -25,7 +26,6 @@ app.use(PrimeVue, {
         }
     }
 })
-app.use(ConfirmationService)
 
 app.directive('tooltip', Tooltip)
 

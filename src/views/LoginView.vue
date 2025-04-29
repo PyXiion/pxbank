@@ -11,19 +11,19 @@ const router = useRouter()
 async function submit(login: string, password: string) {
   await userStore.login(login, password)
   if (userStore.isLoggedIn) {
-    window.location.href = `/${userStore.state.user.username}`
+    router.push({name: 'bank', params: {username: userStore.state.user.username}})
   }
 }
 
 watch(() => userStore.isLoggedIn, () => {
   if (userStore.isLoggedIn) {
-    window.location.href = `/${userStore.state.user.username}`
+    router.push({name: 'bank', params: {username: userStore.state.user.username}})
   }
 })
 
 onMounted(() => {
   if (userStore.isLoggedIn) {
-    window.location.href = `/${userStore.state.user.username}`
+    router.push({name: 'bank', params: {username: userStore.state.user.username}})
   }
 })
 

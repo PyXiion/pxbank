@@ -10,8 +10,13 @@ const router = createRouter({
             component: () => import('@/views/HomeView.vue')
         },
         {
-            path: '/:username',
-            name: 'home',
+            path: '/org/:orgId',
+            name: 'org',
+            component: () => import('@/views/OrganizationVue.vue')
+        },
+        {
+            path: '/@:username',
+            name: 'bank',
             component: () => import('@/views/UserView.vue'),
         },
         {

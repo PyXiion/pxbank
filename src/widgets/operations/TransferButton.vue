@@ -10,9 +10,12 @@ import {useAccountStore} from "@/stores/accountStore.ts";
 import {useToaster} from "@/utils/toaster.ts";
 import {useTransanctionStore} from "@/stores/transactionStore.ts";
 import {animate, utils} from "animejs";
+import {API} from "@/api/search.ts";
+
+type Type = 'number' | 'id' | 'by_name'
 
 interface Props {
-  type: 'number' | 'id'
+  type: Type
   username: string
 }
 
@@ -20,27 +23,42 @@ const props = defineProps<Props>()
 const toast = useToaster()
 
 const visible = ref(false)
-const text = computed(() => props.type === 'number' ? {
-  text: "Перевод по номеру",
-  details: 'Тут вы можете отправить деньги на чужой счёт по номеру этого счёта.'
-} : {
-  text: "Перевод между счетами",
-  details: 'Тут вы можете перевести средства меж своих счетов.'
-})
+
+const types = {
+  'number': {
+    text: "Перевод по номеру",
+    details: 'Тут вы можете отправить деньги на чужой счёт по номеру этого счёта.'
+  },
+  'id': {
+    text: "Перевод между счетами",
+    details: 'Тут вы можете перевести средства меж своих счетов.'
+  },
+  'by_name': {
+    text: 'Перевести',
+    details: 'Тут вы можете перевести средства другому игроку, если у него есть публичный счёт.'
+  }
+}
+const text = computed(() => types[props.type])
 
 const MAX_COMMENT_LENGTH = 256
 
+// INPUT
 const fromAccount = ref<Account | null>(null)
 const toAccount = ref<Account | null>(null)
 const accountNumber = ref("")
 const amount = ref<number>(0)
 const comment = ref<string>("")
+const playerName = ref<string>("")
+// INPUT
 
-const enabledMoneyInput = computed(() => props.type === 'id' ? !!toAccount.value : (!!fromAccount.value && !!accountNumber.value))
+const playerSuggestions = ref<string[]>([])
 
 const scalars = ref([1, 9])
 const currentScalarIndex = ref(0)
+
 const scalarSpan = ref<HTMLSpanElement>()
+
+const isPlayerSelected = computed(() => !!playerName.value)
 
 watch(() => visible.value, (visible) => {
   if (visible === true)
@@ -50,7 +68,6 @@ watch(() => visible.value, (visible) => {
 async function transfer() {
   const accountStore = useAccountStore()
   try {
-    // parseFloat because for some reason InputNumber returns string
     const realAmount = parseFloat(amount.value as any) * scalars.value[currentScalarIndex.value];
     if (props.type === 'id') {
       await accountStore.transfer(fromAccount.value!.id, toAccount.value!.id, realAmount, comment.value)
@@ -73,6 +90,7 @@ function clear() {
   amount.value = 0
   comment.value = ""
   currentScalarIndex.value = 0
+  playerName.value = ""
 }
 
 function nextScalar() {
@@ -85,6 +103,25 @@ function nextScalar() {
   })
 }
 
+async function updatePlayerSuggestions() {
+  try {
+    playerSuggestions.value = await API.searchUsers(playerName.value)
+  } catch (e) {
+    playerSuggestions.value = []
+  }
+}
+
+const buttonActive = computed(() => {
+  if (!fromAccount.value || !amount.value) return false;
+  switch (props.type) {
+    case "number":
+      return !!accountNumber.value;
+    case "by_name":
+    case "id":
+      return !!toAccount.value;
+  }
+  return false;
+})
 </script>
 
 <template>
@@ -106,7 +143,7 @@ function nextScalar() {
         <InputGroupAddon><i class="pi pi-hashtag"></i></InputGroupAddon>
       </InputGroup>
     </div>
-    <div v-else>
+    <div v-else-if="type === 'id'">
       <AccountSelect
         v-model="toAccount"
         :disabled="!fromAccount"
@@ -115,6 +152,26 @@ function nextScalar() {
         :username_from="username"
         class="w-1/1 mb-4"
         placeholder="Выберите куда перевести"
+      />
+    </div>
+    <div v-else>
+      <InputGroup class="mb-4">
+        <AutoComplete
+          v-model="playerName"
+          :suggestions="playerSuggestions"
+          @complete="updatePlayerSuggestions"
+          placeholder="Введите имя игрока"
+        />
+        <InputGroupAddon><i class="pi pi-user"></i></InputGroupAddon>
+      </InputGroup>
+
+      <AccountSelect
+        v-model="toAccount"
+        :exclude_id="fromAccount?.id"
+        :required_currency="fromAccount?.currency_id"
+        :username_from="playerName"
+        class="w-1/1 mb-4"
+        placeholder="Выберите счёт получателя"
       />
     </div>
 
@@ -128,16 +185,13 @@ function nextScalar() {
 
       <InputNumber
         v-model="amount"
-        :disabled="!enabledMoneyInput"
         :max="fromAccount?.balance ?? 0"
         :max-fraction-digits="2" :min="0"
         fluid
         locale="ru-RU"
         placeholder="Сколько перевести"
         @keydown.enter="transfer"
-      >
-
-      </InputNumber>
+      />
       <InputGroupAddon class="cursor-pointer overflow-hidden" @click="nextScalar">
         <span ref="scalarSpan">
           x1
@@ -162,7 +216,7 @@ function nextScalar() {
 
     <div class="flex justify-end gap-3 mt-8">
       <Button severity="secondary" @click="visible = false">Отмена</Button>
-      <Button @click="transfer">Перевести</Button>
+      <Button :disabled="!buttonActive" @click="transfer">Перевести</Button>
     </div>
   </Dialog>
 
@@ -174,5 +228,4 @@ function nextScalar() {
 </template>
 
 <style scoped>
-
 </style>

@@ -38,10 +38,8 @@ async function loadTransactions() {
 }
 
 onMounted(loadTransactions)
+watch(() => props.username, loadTransactions)
 
-function onBeforeEnter(el: HTMLElement) {
-  // el.style.rotateX = '180deg'
-}
 
 function onEnter(el: HTMLElement, done: () => void) {
   const index = parseInt((el as any).dataset.index, 10) || 0;
@@ -89,7 +87,6 @@ watch(() => store.transactions, (newList, oldList) => {
       <TransitionGroup
           :css="false"
           type="animation"
-          @before-enter="onBeforeEnter as any"
           @enter="onEnter as any"
           @leave="onLeave as any"
       >
