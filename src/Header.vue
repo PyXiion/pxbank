@@ -28,13 +28,11 @@ const items = ref<TabInfo[]>([
     params: () => ({ username: userStore.state.user.username })
   },
   {
-    name: 'org',
+    name: 'orgList',
     label: 'Организации',
-    icon: 'pi pi-building',
-    params: () => ({ orgId: 0 }),
-    disabled: true
+    icon: 'pi pi-building'
   },
-  { name: 'currencies', label: 'Валюты', icon: 'pi pi-money-bill', disabled: true },
+  { name: 'map', label: 'Карта (WIP)', icon: 'pi pi-globe' },
   { name: 'marketplace', label: 'Маркетплейс (WIP)', icon: 'pi pi-shopping-bag', disabled: true },
 ])
 
@@ -88,7 +86,7 @@ function onTabClick(tab: TabInfo) {
           >
             <a class="flex items-center gap-2 text-inherit font-bold">
               <i :class="tab.icon"/>
-              <span>{{ tab.label }}</span>
+              <span v-html="tab.label"></span>
             </a>
           </Tab>
         </TabList>

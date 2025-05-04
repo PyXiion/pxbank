@@ -1,70 +1,88 @@
-<script setup lang="ts">
-
-import Account from "@/widgets/accounts/AccountWidget.vue";
-import {type AccountState, useAccountStore} from "@/stores/accountStore.ts";
-import {computed, onActivated, onMounted, ref, watch} from "vue";
-import NewAccountButton from "@/widgets/operations/NewAccountButton.vue";
+<script lang="ts" setup>
+import {computed, onMounted, watch} from 'vue';
+import {useAccountStore} from '@/stores/accountStore';
+import AccountWidget from '@/widgets/accounts/AccountWidget.vue';
+import {useDialog} from "primevue";
+import NewAccountDialog from "@/widgets/dialogs/NewAccountDialog.vue";
 
 interface Props {
-  username: string
+  ownerType: 'user' | 'org';
+  ownerId: string | number;
+
+  canManage?: boolean
 }
-const props = defineProps<Props>()
 
-const accountStore = useAccountStore()
+const { ownerType, ownerId, canManage = false} = defineProps<Props>();
 
-const state = computed(() => accountStore.users[props.username])
+const accountStore = useAccountStore();
+const dialog = useDialog()
 
-const errorText = computed(() => {
-  if (state.value && state.value.error instanceof Error) {
-    return state.value.error.message
-  }
-
-  return state.value?.error?.toString()
-})
-
-function fetchUser() {
-  if (!accountStore.hasUser(props.username)) {
-    accountStore.fetchUser(props.username)
+// Load accounts for given owner on mount and when props change
+function loadAccounts() {
+  if (ownerType === 'user') {
+    accountStore.fetchUser(ownerId as string);
+  } else {
+    accountStore.fetchOrg(ownerId as number);
   }
 }
 
-onMounted(fetchUser)
+onMounted(loadAccounts);
+watch(() => [ownerType, ownerId], loadAccounts);
 
-watch(() => props.username, fetchUser)
+const ownerKey = computed(() => `${ownerType}:${ownerId}`);
+const ownerState = computed(() => accountStore.owners[ownerKey.value]);
 
-
+const isLoading = computed(() => ownerState.value?.loading ?? true);
+const error = computed(() => ownerState.value?.error);
+const errorMessage = computed(() => {
+  const err = error.value;
+  return err instanceof Error ? err.message : String(err);
+});
+const accounts = computed(() => ownerState.value?.accounts ?? []);
 </script>
 
 <template>
-  <div v-if="!state || state.isLoading">
-    Загрузка <i class="pi pi-spin pi-settings"></i>
-  </div>
-  <div v-else-if="state.error" class="panel text-red-500!">
-    Ошибка. {{errorText}}
-  </div>
-  <div v-else class="flex flex-col gap-3">
-    <TransitionGroup name="slide-transition">
-      <Account
-          v-for="acc in state.accounts"
-          class="panel"
-          :data="acc"
-          :key="acc.id"
-      />
-    </TransitionGroup>
+  <div>
+    <div v-if="isLoading" class="p-4 text-center">
+      <span>Загрузка...</span>
+      <i class="pi pi-spin pi-settings ml-2"/>
+    </div>
 
-    <div class="panel flex flex-col text-center gap-2">
-      <div v-if="state.accounts.length === 0">
-        <p>Ой-ой, у вас, похоже, нет счёта.</p>
-        <p>Хотите открыть?</p>
+    <div v-else-if="error" class="error-panel">
+      Ошибка: {{ errorMessage }}
+    </div>
+
+    <div v-else class="space-y-4">
+      <div class="space-y-4 h-1/1" v-if="accounts.length > 0">
+        <transition-group name="fade">
+          <AccountWidget
+            v-for="acc in accounts"
+            :key="acc.id"
+            :data="acc"
+            class="panel"/>
+        </transition-group>
       </div>
 
-      <NewAccountButton :username="username" class="mx-auto">Открыть</NewAccountButton>
-
+      <div class="panel text-center" v-if="canManage">
+        <p v-if="accounts.length === 0" class="mb-2">
+          У вас пока нет счетов. Хотите создать?
+        </p>
+        <Button
+          @click="dialog.open(NewAccountDialog, {data: {type: ownerType, target: ownerId}})"
+        >
+          Открыть счет
+        </Button>
+      </div>
     </div>
   </div>
-
-
 </template>
 
 <style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s;
+}
+
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
 </style>

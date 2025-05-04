@@ -7,8 +7,8 @@ export namespace API {
         return await protocol.send('search/users', {username})
     }
 
-    export async function getUserAccounts(username: string): Promise<Account[]> {
+    export async function getAccounts(type: 'org' | 'user', id: string | number): Promise<Account[]> {
         const {protocol} = useProtocol();
-        return (await protocol.send('accounts/fetch', {username})).accounts
+        return (await protocol.send('accounts/fetch/' + type, {id})).accounts
     }
 }

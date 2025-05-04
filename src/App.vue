@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {RouterView, useRoute} from 'vue-router'
 import Toast from 'primevue/toast';
 import Header from "@/Header.vue";
@@ -14,11 +14,16 @@ const bp = useBreakpoints()
 <template>
   <Toast class="max-w-2/3"/>
   <ConfirmDialog/>
+  <DynamicDialog/>
 
-  <Header v-if="!route.meta.hideHeader"/>
   <MobileSideBar v-if="bp.maxSm"/>
-  <RouterView/>
 
+  <div class="flex flex-col h-screen">
+    <Header v-if="!route.meta.hideHeader"/>
+    <main class="flex-1 overflow-auto">
+      <RouterView/>
+    </main>
+  </div>
 
   <GamemodeListener/>
 </template>

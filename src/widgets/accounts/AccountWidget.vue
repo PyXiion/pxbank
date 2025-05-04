@@ -64,7 +64,7 @@ const toggleMenu = (event: any) => {
 
 async function rename(name: string) {
   try {
-    await accountStore.renameOne(props.data.id, name)
+    await accountStore.renameAccount(props.data.id, name)
     toast.success('Счёт переименован')
   } catch (e: any) {
     toast.error('Ошибка', e?.message ?? e.toString())
@@ -88,7 +88,7 @@ async function del() {
     },
     async accept() {
       try {
-        await accountStore.deleteOne(props.data.id)
+        await accountStore.deleteAccount(props.data.id)
         toast.success('Счёт удалён')
       } catch (e: any) {
         toast.error('Ошибка', e?.message ?? e.toString())

@@ -1,16 +1,17 @@
-<script setup lang="ts">
-import {useTransanctionStore} from "@/stores/transactionStore.ts";
+<script lang="ts" setup>
 import TransactionItem from "@/widgets/transactions/TransactionItem.vue";
 import {computed, nextTick, onMounted, ref, watch} from "vue";
 import type {Transaction} from "@/types.ts";
-import {animate, utils} from 'animejs'
+import {animate} from 'animejs'
+import {useTransactionStore} from "@/stores/transactionStore.ts";
 
 interface Props {
-  username: string;
+  ownerType: 'user' | 'org';
+  ownerId: string | number;
 }
 
 const props = defineProps<Props>();
-const store = useTransanctionStore()
+const store = useTransactionStore()
 
 const errorText = computed(() => {
   if (store.error instanceof Error) {
@@ -28,17 +29,17 @@ const totalCount = ref(0)
 const newCount = ref(0)
 
 async function loadPage(page: number) {
-  await store.fetchTransactions(props.username, page + 1)
+  await store.fetchTransactions(props.ownerType, props.ownerId, page + 1);
 }
 
 async function loadTransactions() {
-  if (props.username) {
-    await store.fetchTransactions(props.username);
+  if (props.ownerType && props.ownerId !== null) {
+    await store.fetchTransactions(props.ownerType, props.ownerId);
   }
 }
 
 onMounted(loadTransactions)
-watch(() => props.username, loadTransactions)
+watch(() => [props.ownerId, props.ownerType], loadTransactions)
 
 
 function onEnter(el: HTMLElement, done: () => void) {
@@ -52,6 +53,7 @@ function onEnter(el: HTMLElement, done: () => void) {
     delay: index * 65,
   }).then(done);
 }
+
 function onLeave(el: HTMLElement, done: () => void) {
   done()
 }
@@ -71,10 +73,10 @@ watch(() => store.transactions, (newList, oldList) => {
 <template>
   <div class="panel-no-p overflow-hidden">
     <div class="p-3">
-      <h2 class="text-xl text-center">Транзакции пользователя <span class="font-[Minecraft]">{{ username }}</span></h2>
+      <h2 v-if="ownerType==='user'" class="text-xl text-center">Транзакции пользователя <span class="font-[Minecraft]">{{ props.ownerId }}</span></h2>
 
-      <p class="placeholder text-red-500!" v-if="store.error">Ошибка. {{ errorText }}</p>
-      <p class="placeholder" v-else-if="!store.isLoading && store.transactions.length === 0">Пустота...</p>
+      <p v-if="store.error" class="placeholder text-red-500!">Ошибка. {{ errorText }}</p>
+      <p v-else-if="!store.isLoading && store.transactions.length === 0" class="placeholder">Пустота...</p>
     </div>
 
 
@@ -83,20 +85,20 @@ watch(() => store.transactions, (newList, oldList) => {
       <Paginator :rows="store.perPage" :totalRecords="store.total" @page="loadPage($event.page)"/>
     </div>
 
-    <div ref="list" v-if="!store.error">
+    <div v-if="!store.error" ref="list">
       <TransitionGroup
-          :css="false"
-          type="animation"
-          @enter="onEnter as any"
-          @leave="onLeave as any"
+        :css="false"
+        type="animation"
+        @enter="onEnter as any"
+        @leave="onLeave as any"
       >
         <TransactionItem
-            v-for="(tx, index) in transactions"
-            class="odd:bg-neutral-200 dark:odd:bg-neutral-600 px-3"
-            :key="tx.id"
-            :transaction="tx"
-            :ownerUsername="username"
-            :data-index="index"
+          v-for="(tx, index) in transactions"
+          :key="tx.id"
+          :data-index="index"
+          :ownerUsername="ownerType === 'user' ? ownerId as string : undefined"
+          :transaction="tx"
+          class="odd:bg-neutral-200 dark:odd:bg-neutral-600 px-3"
         />
       </TransitionGroup>
     </div>

@@ -15,6 +15,8 @@ declare module 'vue' {
     ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     ConfirmPopup: typeof import('primevue/confirmpopup')['default']
     Dialog: typeof import('primevue/dialog')['default']
+    DynamicDialog: typeof import('primevue/dynamicdialog')['default']
+    FloatLabel: typeof import('primevue/floatlabel')['default']
     InputGroup: typeof import('primevue/inputgroup')['default']
     InputGroupAddon: typeof import('primevue/inputgroupaddon')['default']
     InputMask: typeof import('primevue/inputmask')['default']
@@ -25,6 +27,7 @@ declare module 'vue' {
     Popover: typeof import('primevue/popover')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ScrollPanel: typeof import('primevue/scrollpanel')['default']
     Select: typeof import('primevue/select')['default']
     Sidebar: typeof import('primevue/sidebar')['default']
     Splitter: typeof import('primevue/splitter')['default']
@@ -32,6 +35,7 @@ declare module 'vue' {
     Tab: typeof import('primevue/tab')['default']
     TabList: typeof import('primevue/tablist')['default']
     Tabs: typeof import('primevue/tabs')['default']
+    VirtualScroller: typeof import('primevue/virtualscroller')['default']
   }
   export interface ComponentCustomProperties {
     Tooltip: typeof import('primevue/tooltip')['default']

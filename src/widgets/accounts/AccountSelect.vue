@@ -5,7 +5,8 @@ import type { Account } from "@/types.ts";
 import {API} from "@/api/search.ts";
 
 interface Props {
-  username_from: string,
+  ownerType: 'org' | 'user'
+  ownerId: string | number,
   required_currency?: number
   exclude_id?: number
   placeholder?: string
@@ -43,26 +44,24 @@ onMounted(() => {
 
 async function reload() {
   model.value = null;
-  if (!props.username_from)
+  if (!props.ownerId || !props.ownerType)
     return
   try {
     isLoading.value = true
-    const response = await API.getUserAccounts(props.username_from)
+    const response = await API.getAccounts(props.ownerType, props.ownerId)
     accounts.value = Array.isArray(response) ? response : []
 
     if (filteredAccounts.value) {
       model.value = filteredAccounts.value[0]
     }
   } catch (e) {
-    error.value = e as Error
-    console.error("Failed to fetch user accounts:", e)
     accounts.value = []
   } finally {
     isLoading.value = false
   }
 }
 
-watch(() => props.username_from, reload)
+watch(() => [props.ownerType, props.ownerId], reload)
 
 </script>
 

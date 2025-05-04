@@ -7,7 +7,7 @@ import App from './App.vue'
 import router from './router'
 import PrimeVue from 'primevue/config';
 import LARA from '@primeuix/themes/lara';
-import {ConfirmationService} from "primevue";
+import {ConfirmationService, DialogService} from "primevue";
 import ToastService from 'primevue/toastservice';
 import Tooltip from 'primevue/tooltip';
 
@@ -17,6 +17,7 @@ app.use(createPinia())
 app.use(router)
 app.use(ToastService);
 app.use(ConfirmationService)
+app.use(DialogService)
 app.use(PrimeVue, {
     // Default theme configuration
     theme: {

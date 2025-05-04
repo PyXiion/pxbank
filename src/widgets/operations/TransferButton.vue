@@ -8,7 +8,7 @@ import type {Account} from "@/types.ts";
 import CurrencyIcon from "@/widgets/utils/CurrencyIcon.vue";
 import {useAccountStore} from "@/stores/accountStore.ts";
 import {useToaster} from "@/utils/toaster.ts";
-import {useTransanctionStore} from "@/stores/transactionStore.ts";
+import {useTransactionStore} from "@/stores/transactionStore.ts";
 import {animate, utils} from "animejs";
 import {API} from "@/api/search.ts";
 
@@ -16,7 +16,8 @@ type Type = 'number' | 'id' | 'by_name'
 
 interface Props {
   type: Type
-  username: string
+  ownerType: 'org' | 'user'
+  ownerId: string | number
 }
 
 const props = defineProps<Props>()
@@ -58,8 +59,6 @@ const currentScalarIndex = ref(0)
 
 const scalarSpan = ref<HTMLSpanElement>()
 
-const isPlayerSelected = computed(() => !!playerName.value)
-
 watch(() => visible.value, (visible) => {
   if (visible === true)
     clear()
@@ -72,12 +71,12 @@ async function transfer() {
     if (props.type === 'id') {
       await accountStore.transfer(fromAccount.value!.id, toAccount.value!.id, realAmount, comment.value)
     } else {
-      await accountStore.transferByNumber(fromAccount.value!.id, accountNumber.value, realAmount, comment.value)
+      await accountStore.transferByNumber(fromAccount.value!.id, props.type === 'number' ? accountNumber.value : toAccount.value!.number, realAmount, comment.value)
     }
     toast.success('Перевод совершён!')
     visible.value = false
 
-    useTransanctionStore().update()
+    await useTransactionStore().update()
   } catch (e: any) {
     toast.error('Не удалость совершить перевод', e?.message ?? e?.toString())
   }
@@ -135,7 +134,7 @@ const buttonActive = computed(() => {
       {{ text.details }}
     </span>
 
-    <AccountSelect v-model="fromAccount" :username_from="username" class="w-1/1 mb-4"/>
+    <AccountSelect v-model="fromAccount" :owner-type="ownerType" :ownerId="ownerId" class="w-1/1 mb-4"/>
 
     <div v-if="type === 'number'">
       <InputGroup class="mb-4">
@@ -149,7 +148,8 @@ const buttonActive = computed(() => {
         :disabled="!fromAccount"
         :exclude_id="fromAccount?.id"
         :required_currency="fromAccount?.currency_id"
-        :username_from="username"
+        :owner-type="ownerType"
+        :ownerId="ownerId"
         class="w-1/1 mb-4"
         placeholder="Выберите куда перевести"
       />
@@ -161,6 +161,7 @@ const buttonActive = computed(() => {
           :suggestions="playerSuggestions"
           @complete="updatePlayerSuggestions"
           placeholder="Введите имя игрока"
+          force-selection
         />
         <InputGroupAddon><i class="pi pi-user"></i></InputGroupAddon>
       </InputGroup>
@@ -169,7 +170,8 @@ const buttonActive = computed(() => {
         v-model="toAccount"
         :exclude_id="fromAccount?.id"
         :required_currency="fromAccount?.currency_id"
-        :username_from="playerName"
+        owner-type="user"
+        :ownerId="playerName"
         class="w-1/1 mb-4"
         placeholder="Выберите счёт получателя"
       />

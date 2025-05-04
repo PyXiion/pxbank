@@ -35,12 +35,12 @@ const isBetweenUserAccounts = computed(() => {
 
 const fromAccount = computed(() => {
   if (!props.transaction.from_account_id) return null;
-  return accountStore.getById(props.transaction.from_account_id);
+  return accountStore.getAccountById(props.transaction.from_account_id);
 });
 
 const toAccount = computed(() => {
   if (!props.transaction.to_account_id) return null;
-  return accountStore.getById(props.transaction.to_account_id);
+  return accountStore.getAccountById(props.transaction.to_account_id);
 });
 
 </script>

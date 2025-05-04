@@ -3,87 +3,101 @@ import {ref} from "vue";
 import {useProtocol} from "@/stores/protocolStore.ts";
 import {type Transaction} from "@/types.ts";
 
-export const useTransanctionStore = defineStore('transactionStore', () => {
-    const transactions = ref<Transaction[]>([]);
+export const useTransactionStore = defineStore('transactionStore', () => {
+  const transactions = ref<Transaction[]>([]);
 
-    const currentUsername = ref('')
-    const currentPage = ref(1);
-    const totalPages = ref(1);
-    const total = ref(1);
-    const perPage = ref(1);
+  const currentType = ref<'user'|'org'>()
+  const currentUsername = ref('');
+  const currentOrgId = ref<null | string | number>(null); // Поддержка организации
+  const currentPage = ref(1);
+  const totalPages = ref(1);
+  const total = ref(1);
+  const perPage = ref(1);
 
-    const isLoading = ref(false);
-    const error = ref<unknown>(null);
+  const isLoading = ref(false);
+  const error = ref<unknown>(null);
 
-    const {protocol} = useProtocol();
+  const {protocol} = useProtocol();
 
-    async function fetchTransactions(username: string, page = 1) {
-        isLoading.value = true;
-        error.value = null;
-        transactions.value = []
+  // Функция для загрузки транзакций
+  async function fetchTransactions(type: 'user' | 'org', ownerId: string | number, page = 1) {
+    isLoading.value = true;
+    error.value = null;
+    transactions.value = [];
 
-        try {
-            const body = {
-                username,
-                page
-            }
-            const response = await protocol.send("transactions/fetch", body);
+    try {
+      const route = 'transactions/fetch/' + type;
+      const body = {
+        page,
+        [type === 'user' ? 'username' : 'org_id']: ownerId, // Поддержка типов 'user' и 'org'
+      };
+      const response = await protocol.send(route, body);
 
-            currentUsername.value = username
-            transactions.value = response.transactions;
-            totalPages.value = response.total_pages;
-            total.value = response.total
-            perPage.value = response.per_page
-            currentPage.value = page;
-        } catch (e) {
-            error.value = e;
-        } finally {
-            isLoading.value = false;
-        }
+      currentType.value = type
+      if (type === 'user') {
+        currentUsername.value = ownerId as string;
+        currentOrgId.value = null; // Очищаем, если это пользователь
+      } else {
+        currentOrgId.value = ownerId;
+        currentUsername.value = ''; // Очищаем, если это организация
+      }
+
+      transactions.value = response.transactions;
+      totalPages.value = response.total_pages;
+      total.value = response.total;
+      perPage.value = response.per_page;
+      currentPage.value = page;
+    } catch (e) {
+      error.value = e;
+    } finally {
+      isLoading.value = false;
     }
+  }
 
-    async function update() {
-        const body = {
-            username: currentUsername.value,
-            page: currentPage.value
-        }
-        const response = await protocol.send("transactions/fetch", body);
+  // Функция для обновления транзакций (например, для добавления новых)
+  async function update() {
+    const ownerId = currentType.value === 'user' ? currentUsername.value! : currentOrgId.value!
+    const body = {
+      page: currentPage.value,
+      [currentType.value === 'user' ? 'username' : 'org_id']: ownerId, // Поддержка типов 'user' и 'org'
+    };
+    const response = await protocol.send('transactions/fetch/' + currentType.value, body);
 
-        console.log([...transactions.value])
-        console.log(response.transactions)
+    let i = 0;
+    (response.transactions as Transaction[]).forEach((tx) => {
+      if (tx.id !== transactions.value[i].id) {
+        transactions.value.splice(i, 0, tx);
+      }
+      ++i;
+    });
 
-        let i = 0;
-        (response.transactions as Transaction[]).forEach((tx) => {
-            if (tx.id !== transactions.value[i].id) {
-                transactions.value.splice(i, 0, tx)
-            }
-            ++i;
-        })
+    transactions.value.splice(10); // Оставляем только 10 последних транзакций
+  }
 
-        transactions.value.splice(10)
-        console.log([...transactions.value])
+  // Функция для установки текущей страницы
+  function setPage(page: number) {
+    if (page !== currentPage.value && page <= totalPages.value && page > 0) {
+      fetchTransactions(currentUsername.value ? 'user' : 'org', currentUsername.value || currentOrgId.value!, page);
     }
+  }
 
-    function setPage(page: number) {
-        if (page != currentPage.value && page < totalPages.value && page > 0) {
-            fetchTransactions(currentUsername.value, page);
-        }
-    }
+  // Функция для добавления транзакции по ID (если это необходимо)
+  function checkAndAddTransactionById(id: number) {
+    // Реализовать логику добавления транзакции по ID, если требуется
+  }
 
-    function checkAndAddTransactionById(id: number) {
-
-    }
-
-    return {
-        transactions,
-        isLoading,
-        error,
-        fetchTransactions,
-        update,
-        setPage,
-        totalPages,
-        currentPage,
-        total,
-        perPage
-    }
+  return {
+    transactions,
+    isLoading,
+    error,
+    fetchTransactions,
+    update,
+    setPage,
+    totalPages,
+    currentPage,
+    total,
+    perPage,
+    currentUsername,
+    currentOrgId, // Добавленное свойство для текущей организации
+  };
 });

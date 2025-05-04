@@ -10,9 +10,14 @@ const router = createRouter({
             component: () => import('@/views/HomeView.vue')
         },
         {
+            path: '/organizations',
+            name: 'orgList',
+            component: () => import('@/views/OrganizationListView.vue')
+        },
+        {
             path: '/org/:orgId',
             name: 'org',
-            component: () => import('@/views/OrganizationVue.vue')
+            component: () => import('@/views/OrganizationView.vue')
         },
         {
             path: '/@:username',
@@ -26,6 +31,11 @@ const router = createRouter({
             meta: {
                 hideHeader: true
             },
+        },
+        {
+            path: '/map',
+            name: 'map',
+            component: () => import("@/views/MapView.vue")
         }
     ],
 })

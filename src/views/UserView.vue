@@ -53,7 +53,7 @@ function loginLogoutButton() {
       </section>
 
       <section>
-        <AccountListWidget :username="username"/>
+        <AccountListWidget owner-type="user" :owner-id="username" :can-manage="canManagePage"/>
       </section>
     </template>
 
@@ -66,9 +66,9 @@ function loginLogoutButton() {
           </div>
 
           <div class="flex flex-col md:flex-row gap-3">
-            <TransferButton :username="username" type="by_name"/>
-            <TransferButton :username="username" type="number"/>
-            <TransferButton :username="username" type="id"/>
+            <TransferButton owner-type="user" :owner-id="username" type="by_name"/>
+            <TransferButton owner-type="user" :owner-id="username" type="number"/>
+            <TransferButton owner-type="user" :owner-id="username" type="id"/>
           </div>
 
           <div class="flex flex-col md:flex-row gap-3">
@@ -88,7 +88,7 @@ function loginLogoutButton() {
         </section>
 
         <Teleport defer to="#transaction-mobile" :disabled="bp.md">
-          <TransactionHistory :username="username"/>
+          <TransactionHistory owner-type="user" :owner-id="username"/>
         </Teleport>
       </div>
     </template>

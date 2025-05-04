@@ -40,3 +40,24 @@ export interface Transaction {
     from_account_id?: number // есть, если есть доступ к этому счёту
     to_account_id?: number // есть, если есть доступ к этому счёту
 }
+
+export type OrganizationRole = 'member' | 'admin' | 'owner';
+
+export interface OrganizationMember {
+    username: string;
+    role: OrganizationRole
+}
+
+export interface OrganizationShortInfo {
+    id: number
+    name: string
+
+    member_limit: number
+    member_count: number
+    access_role?: OrganizationRole
+}
+
+export interface Organization extends OrganizationShortInfo {
+    owner: OrganizationMember
+    members: OrganizationMember[]
+}
