@@ -35,7 +35,7 @@ function createOrg() {
         Загрузка...
       </div>
       <div v-else-if="orgListStore.error" class="error-panel">
-        Ошибка: {{ orgListStore.error?.message ?? orgListStore.error.toString() }}
+        Ошибка: {{ (orgListStore.error as any)?.message ?? orgListStore.error.toString() }}
       </div>
       <div v-else-if="orgListStore.data.length > 0" class="space-y-3">
         <OrganizationListItem
